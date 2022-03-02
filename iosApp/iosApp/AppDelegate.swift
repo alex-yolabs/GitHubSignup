@@ -8,6 +8,7 @@
 
 import UIKit
 import shared
+import SnapKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
