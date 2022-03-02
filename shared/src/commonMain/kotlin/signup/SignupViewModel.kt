@@ -36,7 +36,7 @@ class SignupViewModel(
         gitHubValidationService.validateRepeatedPassword(password, repeatedPassword)
     }
 
-    val isSignInButtonEnabled = combine(
+    val isSignUpButtonEnabled = combine(
         usernameValidationResult,
         passwordValidationResult,
         repeatedPasswordValidationResult,
