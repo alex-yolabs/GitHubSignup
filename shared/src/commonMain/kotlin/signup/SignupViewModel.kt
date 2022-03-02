@@ -1,5 +1,6 @@
 package signup
 
+import utilities.asCommonFlow
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,6 +48,7 @@ class SignupViewModel(
                 !signingUp
     }
         .distinctUntilChanged()
+        .asCommonFlow()
 
     val usernameValidationText = usernameValidationResult.map { result ->
         when (result) {
@@ -62,6 +64,7 @@ class SignupViewModel(
                 "Username already taken"
         }
     }
+        .asCommonFlow()
 
     val passwordValidationText = passwordValidationResult.map { result ->
         when (result) {
@@ -73,6 +76,7 @@ class SignupViewModel(
                 "Password must be at least ${gitHubValidationService.minPasswordCount} characters"
         }
     }
+        .asCommonFlow()
 
     val repeatedPasswordValidationText = repeatedPasswordValidationResult.map { result ->
         when (result) {
@@ -84,10 +88,11 @@ class SignupViewModel(
                 "Password different"
         }
     }
+        .asCommonFlow()
 
-    val isUsernameValidationLabelHidden = usernameValidationText.map { it.isEmpty() }
-    val isPasswordValidationLabelHidden = passwordValidationText.map { it.isEmpty() }
-    val isRepeatedPasswordValidationLabelHidden = repeatedPasswordValidationText.map { it.isEmpty() }
+    val isUsernameValidationLabelHidden = usernameValidationText.map { it.isEmpty() }.asCommonFlow()
+    val isPasswordValidationLabelHidden = passwordValidationText.map { it.isEmpty() }.asCommonFlow()
+    val isRepeatedPasswordValidationLabelHidden = repeatedPasswordValidationText.map { it.isEmpty() }.asCommonFlow()
 
     val signedIn = _onSignUpButtonClicked.flatMapLatest {
         flow {
@@ -96,6 +101,7 @@ class SignupViewModel(
             _signingUp.value = false
         }
     }
+        .asCommonFlow()
 
     fun onUsernameChanged(username: String) {
         _username.value = username
