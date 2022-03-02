@@ -26,7 +26,7 @@ class CloudGitHubValidationService(
     private val gitHubApi: GitHubApi
 ): GitHubValidationService {
 
-    override val minPasswordCount = 5
+    override val minPasswordCount = 6
 
     override fun validateUsername(username: String): Flow<UsernameValidationResult> = flow {
         if (username.isEmpty()) {
@@ -50,7 +50,7 @@ class CloudGitHubValidationService(
     override fun validatePassword(password: String): PasswordValidationResult {
         return when (password.count()) {
             0 -> PasswordValidationResult.EMPTY
-            in 0..5 -> PasswordValidationResult.TOO_SHORT
+            in 0 until minPasswordCount -> PasswordValidationResult.TOO_SHORT
             else -> PasswordValidationResult.OK
         }
     }
