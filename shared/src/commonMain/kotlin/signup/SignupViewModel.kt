@@ -50,57 +50,67 @@ class SignupViewModel(
         .distinctUntilChanged()
         .asCommonFlow()
 
-    val usernameValidationText = usernameValidationResult.map { result ->
-        when (result) {
-            UsernameValidationResult.EMPTY ->
-                ""
-            UsernameValidationResult.VALIDATING ->
-                "Validating username"
-            UsernameValidationResult.OK ->
-                "Username available"
-            UsernameValidationResult.WRONG_FORMAT ->
-                "Username can only contain numbers or digits"
-            UsernameValidationResult.ALREADY_TAKEN ->
-                "Username already taken"
+    val usernameValidationText = usernameValidationResult
+        .map { result ->
+            when (result) {
+                UsernameValidationResult.EMPTY ->
+                    ""
+                UsernameValidationResult.VALIDATING ->
+                    "Validating username"
+                UsernameValidationResult.OK ->
+                    "Username available"
+                UsernameValidationResult.WRONG_FORMAT ->
+                    "Username can only contain numbers or digits"
+                UsernameValidationResult.ALREADY_TAKEN ->
+                    "Username already taken"
+            }
         }
-    }
         .asCommonFlow()
 
-    val passwordValidationText = passwordValidationResult.map { result ->
-        when (result) {
-            PasswordValidationResult.EMPTY ->
-                ""
-            PasswordValidationResult.OK ->
-                "Password acceptable"
-            PasswordValidationResult.TOO_SHORT ->
-                "Password must be at least ${gitHubValidationService.minPasswordCount} characters"
+    val passwordValidationText = passwordValidationResult
+        .map { result ->
+            when (result) {
+                PasswordValidationResult.EMPTY ->
+                    ""
+                PasswordValidationResult.OK ->
+                    "Password acceptable"
+                PasswordValidationResult.TOO_SHORT ->
+                    "Password must be at least ${gitHubValidationService.minPasswordCount} characters"
+            }
         }
-    }
         .asCommonFlow()
 
-    val repeatedPasswordValidationText = repeatedPasswordValidationResult.map { result ->
-        when (result) {
-            RepeatedPasswordValidationResult.EMPTY ->
-                ""
-            RepeatedPasswordValidationResult.OK ->
-                "Password repeated"
-            RepeatedPasswordValidationResult.DIFFERENT ->
-                "Password different"
+    val repeatedPasswordValidationText = repeatedPasswordValidationResult
+        .map { result ->
+            when (result) {
+                RepeatedPasswordValidationResult.EMPTY ->
+                    ""
+                RepeatedPasswordValidationResult.OK ->
+                    "Password repeated"
+                RepeatedPasswordValidationResult.DIFFERENT ->
+                    "Password different"
+            }
         }
-    }
         .asCommonFlow()
 
-    val isUsernameValidationLabelHidden = usernameValidationText.map { it.isEmpty() }.asCommonFlow()
-    val isPasswordValidationLabelHidden = passwordValidationText.map { it.isEmpty() }.asCommonFlow()
-    val isRepeatedPasswordValidationLabelHidden = repeatedPasswordValidationText.map { it.isEmpty() }.asCommonFlow()
+    val isUsernameValidationLabelHidden = usernameValidationText
+        .map { it.isEmpty() }
+        .asCommonFlow()
+    val isPasswordValidationLabelHidden = passwordValidationText
+        .map { it.isEmpty() }
+        .asCommonFlow()
+    val isRepeatedPasswordValidationLabelHidden = repeatedPasswordValidationText
+        .map { it.isEmpty() }
+        .asCommonFlow()
 
-    val signedIn = _onSignUpButtonClicked.flatMapLatest {
-        flow {
-            _signingUp.value = true
-            emit(gitHubApi.signUp(_username.value, _password.value))
-            _signingUp.value = false
+    val signedIn = _onSignUpButtonClicked
+        .flatMapLatest {
+            flow {
+                _signingUp.value = true
+                emit(gitHubApi.signUp(_username.value, _password.value))
+                _signingUp.value = false
+            }
         }
-    }
         .asCommonFlow()
 
     fun onUsernameChanged(username: String) {
