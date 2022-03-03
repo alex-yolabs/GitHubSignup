@@ -2,13 +2,13 @@ package signup
 
 import utilities.asCommonFlow
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
-import io.ktor.http.content.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -23,8 +23,6 @@ import network.PasswordValidationResult
 import network.RepeatedPasswordValidationResult
 import network.UsernameValidationResult
 import utilities.Logger
-import utilities.filterFalse
-import utilities.filterTrue
 import utilities.throttleFirst
 
 @FlowPreview
@@ -39,25 +37,16 @@ class SignupViewModel(
     private val _password = MutableStateFlow("")
     private val _repeatedPassword = MutableStateFlow("")
     private val _onSignUpButtonClicked = MutableSharedFlow<Unit>(0, 1, BufferOverflow.DROP_OLDEST)
-    private val _disableSignUpButton = MutableSharedFlow<Unit>(0, 1, BufferOverflow.DROP_OLDEST)
+    private val _onNetworkFailed = MutableSharedFlow<Throwable>(0, 1, BufferOverflow.DROP_OLDEST)
     private val _isSigningUp = MutableStateFlow(false)
-
-    private val _hasSuccessfullySignedUp = _onSignUpButtonClicked
-        .throttleFirst(500)
-        .flatMapLatest {
-            flow {
-                _isSigningUp.value = true
-                val result = gitHubApi.signUp(_username.value, _password.value)
-                emit(result)
-                _isSigningUp.value = false
-            }
-        }
-        .shareIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
 
     val usernameValidationResult = _username
         .debounce(500)
         .flatMapLatest { username ->
             gitHubValidationService.validateUsername(username)
+                .catch {
+                    _onNetworkFailed.tryEmit(it)
+                }
         }
         .shareIn(viewModelScope, SharingStarted.Eagerly, 1)
         .asCommonFlow()
@@ -107,6 +96,8 @@ class SignupViewModel(
                     "Username can only contain numbers or digits"
                 UsernameValidationResult.ALREADY_TAKEN ->
                     "Username already taken"
+                UsernameValidationResult.SERVICE_ERROR ->
+                    "Something went wrong, please try again later."
             }
         }
         .asCommonFlow()
@@ -149,13 +140,27 @@ class SignupViewModel(
 
     val isLoadingViewAnimating = _isSigningUp.asCommonFlow()
 
-    val signupSuccessEvent = _hasSuccessfullySignedUp.filterTrue().asCommonFlow()
+    val presentSignupSuccessPopupEvent = _onSignUpButtonClicked
+        .throttleFirst(500)
+        .flatMapLatest {
+            _isSigningUp.value = true
+            flow {
+                val username = gitHubApi.signUp(_username.value, _password.value)
+                emit(username)
+                _isSigningUp.value = false
+            }.catch {
+                _onNetworkFailed.tryEmit(it)
+                _isSigningUp.value = false
+            }
+        }
+        .asCommonFlow()
 
-    val signupFailureEvent = _hasSuccessfullySignedUp.filterFalse().asCommonFlow()
+    val presentNetworkFailurePopupEvent = _onNetworkFailed
+        .map { it.message }
+        .asCommonFlow()
 
     fun onUsernameChanged(username: String) {
-        _username.value = username
-        _disableSignUpButton.tryEmit(Unit)
+        _username.value = username.lowercase()
     }
 
     fun onPasswordChanged(password: String) {

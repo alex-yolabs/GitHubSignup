@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.flow
 import utilities.Logger
 
 enum class UsernameValidationResult {
-    EMPTY, VALIDATING, OK, WRONG_FORMAT, ALREADY_TAKEN
+    EMPTY, VALIDATING, OK, WRONG_FORMAT, ALREADY_TAKEN, SERVICE_ERROR
 }
 
 enum class PasswordValidationResult {
@@ -43,10 +43,15 @@ class CloudGitHubValidationService(
         }
 
         emit(UsernameValidationResult.VALIDATING)
-        if (gitHubApi.isUsernameAvailable(username)) {
-            emit(UsernameValidationResult.OK)
-        } else {
-            emit(UsernameValidationResult.ALREADY_TAKEN)
+        try {
+            if (gitHubApi.isUsernameAvailable(username)) {
+                emit(UsernameValidationResult.OK)
+            } else {
+                emit(UsernameValidationResult.ALREADY_TAKEN)
+            }
+        } catch (e: Exception) {
+            logger.log("exception: $e")
+            emit(UsernameValidationResult.SERVICE_ERROR)
         }
     }
 
@@ -63,10 +68,10 @@ class CloudGitHubValidationService(
             return RepeatedPasswordValidationResult.EMPTY
         }
 
-        if (repeatedPassword == password) {
-            return RepeatedPasswordValidationResult.OK
+        return if (repeatedPassword == password) {
+            RepeatedPasswordValidationResult.OK
         } else {
-            return RepeatedPasswordValidationResult.DIFFERENT
+            RepeatedPasswordValidationResult.DIFFERENT
         }
     }
 }

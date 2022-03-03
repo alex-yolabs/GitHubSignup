@@ -3,16 +3,17 @@ package network
 import io.ktor.client.HttpClient
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.coroutines.delay
 import utilities.Logger
 import kotlin.random.Random
 
 interface GitHubApi {
     suspend fun isUsernameAvailable(username: String): Boolean
-    suspend fun signUp(username: String, password: String): Boolean
+    suspend fun signUp(username: String, password: String): String
 }
 
-class CloudGitHubApi: GitHubApi {
+class CloudGitHubApi : GitHubApi {
 
     private val logger = Logger("CloudGitHubApi")
 
@@ -23,18 +24,26 @@ class CloudGitHubApi: GitHubApi {
     }
 
     override suspend fun isUsernameAvailable(username: String): Boolean {
-        val urlString = "$GITHUB_ENDPOINT/$username"
         return try {
             delay(500)
+            val urlString = "$GITHUB_ENDPOINT/$username"
             val response: HttpResponse = httpClient.get(urlString)
-            response.status.value !in 200..299
+            response.status != HttpStatusCode.OK
         } catch(e: Exception) {
-            true
+            if (Random.nextBoolean()) {
+                true
+            } else {
+                throw IllegalStateException("Failed to determine availability of [$username].")
+            }
         }
     }
 
-    override suspend fun signUp(username: String, password: String): Boolean {
+    override suspend fun signUp(username: String, password: String): String {
         delay(1000)
-        return Random.nextBoolean()
+        return if (Random.nextBoolean()) {
+            username
+        } else {
+            throw IllegalStateException("Failed to sign up [$username].")
+        }
     }
 }

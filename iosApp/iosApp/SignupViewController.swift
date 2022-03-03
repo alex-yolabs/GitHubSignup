@@ -170,17 +170,17 @@ class SignupViewController: UIViewController {
                 }
             }
             .closed(by: bag)
-        viewModel.signupSuccessEvent
-            .watch { [weak self] _ in
-                let ac = UIAlertController(title: "You have successfully singed up!", message: nil, preferredStyle: .alert)
+        viewModel.presentSignupSuccessPopupEvent
+            .watchString { [weak self] username in
+                let ac = UIAlertController(title: "You have successfully signed up!", message: username, preferredStyle: .alert)
                 let action = UIAlertAction(title: "OK", style: .default, handler: nil)
                 ac.addAction(action)
                 self?.present(ac, animated: true, completion: nil)
             }
             .closed(by: bag)
-        viewModel.signupFailureEvent
-            .watch { [weak self] _ in
-                let ac = UIAlertController(title: "Something went wrong, please try again later.", message: nil, preferredStyle: .alert)
+        viewModel.presentNetworkFailurePopupEvent
+            .watchString { [weak self] errorMessage in
+                let ac = UIAlertController(title: "Something went wrong, please try again later.", message: errorMessage, preferredStyle: .alert)
                 let action = UIAlertAction(title: "OK", style: .default, handler: nil)
                 ac.addAction(action)
                 self?.present(ac, animated: true, completion: nil)
@@ -197,6 +197,8 @@ class SignupViewController: UIViewController {
                     self?.usernameValidationLabel.textColor = .green
                 case .alreadyTaken, .wrongFormat:
                     self?.usernameValidationLabel.textColor = .red
+                case .serviceError:
+                    self?.usernameValidationLabel.textColor = .orange
                 default:
                     self?.usernameValidationLabel.textColor = .clear
                 }
