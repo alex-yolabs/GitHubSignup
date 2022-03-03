@@ -3,13 +3,16 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		0D0D3D1E862240681236E105 /* Pods_iosApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7A72BEA6E4D83479EDB8133 /* Pods_iosApp.framework */; };
 		D4975B3B27D000380014979E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4975B3A27D000380014979E /* AppDelegate.swift */; };
 		D4975B3D27D000960014979E /* SignupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4975B3C27D000960014979E /* SignupViewController.swift */; };
+		D4975B4027D035D70014979E /* CommonFlow+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4975B3F27D035D70014979E /* CommonFlow+Extension.swift */; };
+		D4975B4227D03E270014979E /* CloseBag.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4975B4127D03E270014979E /* CloseBag.swift */; };
+		D4975B4427D03EB40014979E /* NSRecursiveLock+PerformLocked.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4975B4327D03EB40014979E /* NSRecursiveLock+PerformLocked.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +23,9 @@
 		CD0B829466A188E92298344D /* Pods-iosApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.debug.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.debug.xcconfig"; sourceTree = "<group>"; };
 		D4975B3A27D000380014979E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D4975B3C27D000960014979E /* SignupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupViewController.swift; sourceTree = "<group>"; };
+		D4975B3F27D035D70014979E /* CommonFlow+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CommonFlow+Extension.swift"; sourceTree = "<group>"; };
+		D4975B4127D03E270014979E /* CloseBag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseBag.swift; sourceTree = "<group>"; };
+		D4975B4327D03EB40014979E /* NSRecursiveLock+PerformLocked.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSRecursiveLock+PerformLocked.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +72,9 @@
 			children = (
 				D4975B3A27D000380014979E /* AppDelegate.swift */,
 				D4975B3C27D000960014979E /* SignupViewController.swift */,
+				D4975B3F27D035D70014979E /* CommonFlow+Extension.swift */,
+				D4975B4127D03E270014979E /* CloseBag.swift */,
+				D4975B4327D03EB40014979E /* NSRecursiveLock+PerformLocked.swift */,
 				7555FF8C242A565B00829871 /* Info.plist */,
 			);
 			path = iosApp;
@@ -192,6 +201,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4975B4027D035D70014979E /* CommonFlow+Extension.swift in Sources */,
+				D4975B4427D03EB40014979E /* NSRecursiveLock+PerformLocked.swift in Sources */,
+				D4975B4227D03E270014979E /* CloseBag.swift in Sources */,
 				D4975B3D27D000960014979E /* SignupViewController.swift in Sources */,
 				D4975B3B27D000380014979E /* AppDelegate.swift in Sources */,
 			);
