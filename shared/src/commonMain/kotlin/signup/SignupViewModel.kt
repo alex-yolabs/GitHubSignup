@@ -8,6 +8,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -39,6 +40,10 @@ class SignupViewModel(
     private val _onSignUpButtonClicked = MutableSharedFlow<Unit>(0, 1, BufferOverflow.DROP_OLDEST)
     private val _onNetworkFailed = MutableSharedFlow<Throwable>(0, 1, BufferOverflow.DROP_OLDEST)
     private val _isSigningUp = MutableStateFlow(false)
+
+    val username = _username.asStateFlow()
+    val password = _password.asStateFlow()
+    val repeatedPassword = _repeatedPassword.asStateFlow()
 
     val usernameValidationResult = _username
         .debounce(500)
