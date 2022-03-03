@@ -28,6 +28,7 @@ class CloudGitHubValidationService(
 ): GitHubValidationService {
 
     private val logger = Logger("CloudGitHubValidationService")
+
     override val minPasswordCount = 6
 
     override fun validateUsername(username: String): Flow<UsernameValidationResult> = flow {

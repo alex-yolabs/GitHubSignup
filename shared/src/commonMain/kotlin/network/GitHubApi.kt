@@ -25,6 +25,7 @@ class CloudGitHubApi: GitHubApi {
     override suspend fun isUsernameAvailable(username: String): Boolean {
         val urlString = "$GITHUB_ENDPOINT/$username"
         return try {
+            delay(500)
             val response: HttpResponse = httpClient.get(urlString)
             response.status.value !in 200..299
         } catch(e: Exception) {
