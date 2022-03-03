@@ -2,6 +2,7 @@ package network
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import utilities.Logger
 
 enum class UsernameValidationResult {
     EMPTY, VALIDATING, OK, WRONG_FORMAT, ALREADY_TAKEN
@@ -26,6 +27,7 @@ class CloudGitHubValidationService(
     private val gitHubApi: GitHubApi
 ): GitHubValidationService {
 
+    private val logger = Logger("CloudGitHubValidationService")
     override val minPasswordCount = 6
 
     override fun validateUsername(username: String): Flow<UsernameValidationResult> = flow {

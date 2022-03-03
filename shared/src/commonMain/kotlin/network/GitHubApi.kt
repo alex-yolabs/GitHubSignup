@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.delay
+import utilities.Logger
 import kotlin.random.Random
 
 interface GitHubApi {
@@ -12,6 +13,9 @@ interface GitHubApi {
 }
 
 class CloudGitHubApi: GitHubApi {
+
+    private val logger = Logger("CloudGitHubApi")
+
     private val httpClient = HttpClient()
 
     companion object {
