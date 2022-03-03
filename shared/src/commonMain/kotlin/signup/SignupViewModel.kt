@@ -24,7 +24,7 @@ class SignupViewModel(
     private val _password = MutableStateFlow("")
     private val _repeatedPassword = MutableStateFlow("")
     private val _onSignUpButtonClicked = MutableSharedFlow<Unit>()
-    private val _signingUp = MutableStateFlow(false)
+    private val _isSigningUp = MutableStateFlow(false)
 
     private val usernameValidationResult = _username.flatMapLatest { username ->
         gitHubValidationService.validateUsername(username)
@@ -40,7 +40,7 @@ class SignupViewModel(
         usernameValidationResult,
         passwordValidationResult,
         repeatedPasswordValidationResult,
-        _signingUp
+        _isSigningUp
     ) { result1, result2, result3, signingUp ->
         result1 == UsernameValidationResult.OK &&
                 result2 == PasswordValidationResult.OK &&
@@ -103,12 +103,14 @@ class SignupViewModel(
         .map { it.isEmpty() }
         .asCommonFlow()
 
-    val signedIn = _onSignUpButtonClicked
+    val isSigningUp = _isSigningUp.asCommonFlow()
+
+    val isSignedIn = _onSignUpButtonClicked
         .flatMapLatest {
             flow {
-                _signingUp.value = true
+                _isSigningUp.value = true
                 emit(gitHubApi.signUp(_username.value, _password.value))
-                _signingUp.value = false
+                _isSigningUp.value = false
             }
         }
         .asCommonFlow()
