@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.delay
+import kotlin.random.Random
 
 interface GitHubApi {
     suspend fun isUsernameAvailable(username: String): Boolean
@@ -29,6 +30,6 @@ class CloudGitHubApi: GitHubApi {
 
     override suspend fun signUp(username: String, password: String): Boolean {
         delay(1000)
-        return true
+        return Random.nextBoolean()
     }
 }
