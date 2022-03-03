@@ -2,6 +2,7 @@ package signup
 
 import utilities.asCommonFlow
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import io.ktor.http.content.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BufferOverflow
@@ -136,14 +137,14 @@ class SignupViewModel(
         }
         .asCommonFlow()
 
-    val usernameValidationLabelIsHidden = usernameValidationText
-        .map { it.isEmpty() }
+    val usernameValidationLabelIsHidden = usernameValidationResult
+        .map { it == UsernameValidationResult.EMPTY }
         .asCommonFlow()
-    val passwordValidationLabelIsHidden = passwordValidationText
-        .map { it.isEmpty() }
+    val passwordValidationLabelIsHidden = passwordValidationResult
+        .map { it == PasswordValidationResult.EMPTY }
         .asCommonFlow()
-    val repeatedPasswordValidationLabelIsHidden = repeatedPasswordValidationText
-        .map { it.isEmpty() }
+    val repeatedPasswordValidationLabelIsHidden = repeatedPasswordValidationResult
+        .map { it == RepeatedPasswordValidationResult.EMPTY }
         .asCommonFlow()
 
     val isLoadingViewAnimating = _isSigningUp.asCommonFlow()
