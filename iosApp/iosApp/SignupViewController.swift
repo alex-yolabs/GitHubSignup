@@ -172,7 +172,7 @@ class SignupViewController: UIViewController {
             .closed(by: bag)
         viewModel.presentSignupSuccessPopupEvent
             .watchString { [weak self] username in
-                let ac = UIAlertController(title: "You have successfully signed up!", message: username, preferredStyle: .alert)
+                let ac = UIAlertController(title: "✅ You have successfully signed up!", message: username, preferredStyle: .alert)
                 let action = UIAlertAction(title: "OK", style: .default, handler: nil)
                 ac.addAction(action)
                 self?.present(ac, animated: true, completion: nil)
@@ -180,7 +180,7 @@ class SignupViewController: UIViewController {
             .closed(by: bag)
         viewModel.presentNetworkFailurePopupEvent
             .watchString { [weak self] errorMessage in
-                let ac = UIAlertController(title: "Something went wrong, please try again later.", message: errorMessage, preferredStyle: .alert)
+                let ac = UIAlertController(title: "❌ Something went wrong, please try again later.", message: errorMessage, preferredStyle: .alert)
                 let action = UIAlertAction(title: "OK", style: .default, handler: nil)
                 ac.addAction(action)
                 self?.present(ac, animated: true, completion: nil)
