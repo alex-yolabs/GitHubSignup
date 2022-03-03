@@ -93,13 +93,13 @@ class SignupViewModel(
         }
         .asCommonFlow()
 
-    val isUsernameValidationLabelHidden = usernameValidationText
+    val usernameValidationLabelIsHidden = usernameValidationText
         .map { it.isEmpty() }
         .asCommonFlow()
-    val isPasswordValidationLabelHidden = passwordValidationText
+    val passwordValidationLabelIsHidden = passwordValidationText
         .map { it.isEmpty() }
         .asCommonFlow()
-    val isRepeatedPasswordValidationLabelHidden = repeatedPasswordValidationText
+    val repeatedPasswordValidationLabelIsHidden = repeatedPasswordValidationText
         .map { it.isEmpty() }
         .asCommonFlow()
 
