@@ -14,12 +14,14 @@ import network.GitHubValidationService
 import network.PasswordValidationResult
 import network.RepeatedPasswordValidationResult
 import network.UsernameValidationResult
+import utilities.Logger
 
 class SignupViewModel(
     private val gitHubApi: GitHubApi,
     private val gitHubValidationService: GitHubValidationService
 ): ViewModel() {
 
+    private val logger = Logger("SignUpViewModel")
     private val _username = MutableStateFlow("")
     private val _password = MutableStateFlow("")
     private val _repeatedPassword = MutableStateFlow("")
