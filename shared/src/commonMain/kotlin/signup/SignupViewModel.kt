@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.stateIn
 import network.GitHubApi
 import network.GitHubValidationService
 import network.PasswordValidationResult
@@ -53,40 +54,34 @@ class SignupViewModel(
                     _onNetworkFailed.tryEmit(it)
                 }
         }
-        .shareIn(viewModelScope, SharingStarted.Eagerly, 1)
-        .asCommonFlow()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, UsernameValidationResult.EMPTY)
 
     val passwordValidationResult = _password
         .map { password ->
             gitHubValidationService.validatePassword(password)
         }
-        .shareIn(viewModelScope, SharingStarted.Eagerly, 1)
-        .asCommonFlow()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, PasswordValidationResult.EMPTY)
 
     val repeatedPasswordValidationResult = _password
         .combine(_repeatedPassword) { password, repeatedPassword ->
             gitHubValidationService.validateRepeatedPassword(password, repeatedPassword)
         }
-        .shareIn(viewModelScope, SharingStarted.Eagerly, 1)
-        .asCommonFlow()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, RepeatedPasswordValidationResult.EMPTY)
 
-    val isSignUpButtonEnabled =
-        merge(
-            _username.map { false },
-            combine(
-                usernameValidationResult,
-                passwordValidationResult,
-                repeatedPasswordValidationResult,
-                _isSigningUp
-            ) { result1, result2, result3, signingUp ->
-                result1 == UsernameValidationResult.OK &&
-                        result2 == PasswordValidationResult.OK &&
-                        result3 == RepeatedPasswordValidationResult.OK &&
-                        !signingUp
-            }
-        )
-            .distinctUntilChanged()
-            .asCommonFlow()
+    val isSignUpButtonEnabled = merge(
+        _username.map { false },
+        combine(
+            usernameValidationResult,
+            passwordValidationResult,
+            repeatedPasswordValidationResult,
+            _isSigningUp
+        ) { result1, result2, result3, signingUp ->
+            result1 == UsernameValidationResult.OK &&
+                    result2 == PasswordValidationResult.OK &&
+                    result3 == RepeatedPasswordValidationResult.OK &&
+                    !signingUp
+        })
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val usernameValidationText = usernameValidationResult
         .map { result ->
@@ -105,7 +100,7 @@ class SignupViewModel(
                     "Something went wrong, please try again later."
             }
         }
-        .asCommonFlow()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, "")
 
     val passwordValidationText = passwordValidationResult
         .map { result ->
@@ -118,7 +113,7 @@ class SignupViewModel(
                     "Password must be at least ${gitHubValidationService.minPasswordCount} characters"
             }
         }
-        .asCommonFlow()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, "")
 
     val repeatedPasswordValidationText = repeatedPasswordValidationResult
         .map { result ->
@@ -131,19 +126,21 @@ class SignupViewModel(
                     "Password different"
             }
         }
-        .asCommonFlow()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, "")
 
     val usernameValidationLabelIsHidden = usernameValidationResult
         .map { it == UsernameValidationResult.EMPTY }
-        .asCommonFlow()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
     val passwordValidationLabelIsHidden = passwordValidationResult
         .map { it == PasswordValidationResult.EMPTY }
-        .asCommonFlow()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
     val repeatedPasswordValidationLabelIsHidden = repeatedPasswordValidationResult
         .map { it == RepeatedPasswordValidationResult.EMPTY }
-        .asCommonFlow()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
-    val isLoadingViewAnimating = _isSigningUp.asCommonFlow()
+    val isLoadingViewAnimating = _isSigningUp.asStateFlow()
 
     val presentSignupSuccessPopupEvent = _onSignUpButtonClicked
         .throttleFirst(500)
@@ -158,14 +155,14 @@ class SignupViewModel(
                 _isSigningUp.value = false
             }
         }
-        .asCommonFlow()
+        .shareIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     val presentNetworkFailurePopupEvent = _onNetworkFailed
         .map { it.message }
-        .asCommonFlow()
+        .shareIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     fun onUsernameChanged(username: String) {
-        _username.value = username.lowercase()
+        _username.value = username.trim().lowercase()
     }
 
     fun onPasswordChanged(password: String) {

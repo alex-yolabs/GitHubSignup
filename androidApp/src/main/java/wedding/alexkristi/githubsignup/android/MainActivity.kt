@@ -47,12 +47,12 @@ class MainActivity : AppCompatActivity() {
                 val username: String by viewModel.username.collectAsState()
                 val password: String by viewModel.password.collectAsState()
                 val repeatedPassword: String by viewModel.repeatedPassword.collectAsState()
-                val usernameValidationLabelIsHidden by viewModel.usernameValidationLabelIsHidden.collectAsState(initial = true)
-                val passwordValidationLabelIsHidden by viewModel.passwordValidationLabelIsHidden.collectAsState(initial = true)
-                val repeatedPasswordValidationLabelIsHidden by viewModel.repeatedPasswordValidationLabelIsHidden.collectAsState(initial = true)
-                val usernameValidationText by viewModel.usernameValidationText.collectAsState(initial = "")
-                val passwordValidationText by viewModel.passwordValidationText.collectAsState(initial = "")
-                val repeatedPasswordValidationText by viewModel.repeatedPasswordValidationText.collectAsState(initial = "")
+                val usernameValidationLabelIsHidden by viewModel.usernameValidationLabelIsHidden.collectAsState()
+                val passwordValidationLabelIsHidden by viewModel.passwordValidationLabelIsHidden.collectAsState()
+                val repeatedPasswordValidationLabelIsHidden by viewModel.repeatedPasswordValidationLabelIsHidden.collectAsState()
+                val usernameValidationText by viewModel.usernameValidationText.collectAsState()
+                val passwordValidationText by viewModel.passwordValidationText.collectAsState()
+                val repeatedPasswordValidationText by viewModel.repeatedPasswordValidationText.collectAsState()
                 val usernameValidationTextColor by viewModel.usernameValidationResult
                     .map {
                         when (it) {
@@ -93,8 +93,8 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                     .collectAsState(initial = android.graphics.Color.TRANSPARENT)
-                val isSignUpButtonEnabled by viewModel.isSignUpButtonEnabled.collectAsState(initial = false)
-                val isLoadingViewAnimating by viewModel.isLoadingViewAnimating.collectAsState(initial = false)
+                val isSignUpButtonEnabled by viewModel.isSignUpButtonEnabled.collectAsState()
+                val isLoadingViewAnimating by viewModel.isLoadingViewAnimating.collectAsState()
                 OutlinedTextField(
                     value = username,
                     onValueChange = {
