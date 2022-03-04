@@ -11,9 +11,11 @@ import shared
 
 class SignupViewController: UIViewController {
 
-    private let viewModel = SignupViewModel(
-        gitHubApi: gitHubApi,
-        gitHubValidationService: gitHubValidationService
+    private let viewModel = SignupViewModelAccessor(
+        viewModel: SignupViewModel(
+            gitHubApi: gitHubApi,
+            gitHubValidationService: gitHubValidationService
+        )
     )
 
     private lazy var usernameTextField: UITextField = {
