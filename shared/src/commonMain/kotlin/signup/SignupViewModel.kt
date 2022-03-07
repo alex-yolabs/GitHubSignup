@@ -1,6 +1,5 @@
 package signup
 
-import utilities.asCommonFlow
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -12,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -25,7 +24,6 @@ import network.PasswordValidationResult
 import network.RepeatedPasswordValidationResult
 import network.UsernameValidationResult
 import utilities.Logger
-import utilities.throttleFirst
 
 @FlowPreview
 @ExperimentalCoroutinesApi
@@ -35,16 +33,46 @@ class SignupViewModel(
 ) : ViewModel() {
 
     private val logger = Logger("SignUpViewModel")
-    private val _username = MutableStateFlow("")
-    private val _password = MutableStateFlow("")
-    private val _repeatedPassword = MutableStateFlow("")
-    private val _onSignUpButtonClicked = MutableSharedFlow<Unit>(0, 1, BufferOverflow.DROP_OLDEST)
-    private val _onNetworkFailed = MutableSharedFlow<Throwable>(0, 1, BufferOverflow.DROP_OLDEST)
-    private val _isSigningUp = MutableStateFlow(false)
+    private val _username = MutableStateFlow(value = "")
+    private val _password = MutableStateFlow(value = "")
+    private val _repeatedPassword = MutableStateFlow(value = "")
+    private val _onSignUpButtonClicked = MutableSharedFlow<Unit>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    private val _onNetworkFailed = MutableSharedFlow<Throwable>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    private val _isSigningUp = MutableStateFlow(value = false)
 
+    // Inputs
+    fun onUsernameChanged(username: String) {
+        _username.value = username.trim()
+    }
+
+    fun onPasswordChanged(password: String) {
+        _password.value = password
+    }
+
+    fun onRepeatedPasswordChanged(repeatedPassword: String) {
+        _repeatedPassword.value = repeatedPassword
+    }
+
+    fun onSignUpButtonClicked() {
+        _onSignUpButtonClicked.tryEmit(Unit)
+    }
+
+    // Outputs
     val username = _username.asStateFlow()
+
     val password = _password.asStateFlow()
+
     val repeatedPassword = _repeatedPassword.asStateFlow()
+
+    val isLoadingViewAnimating = _isSigningUp.asStateFlow()
 
     val usernameValidationResult = _username
         .debounce(500)
@@ -57,15 +85,11 @@ class SignupViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, UsernameValidationResult.EMPTY)
 
     val passwordValidationResult = _password
-        .map { password ->
-            gitHubValidationService.validatePassword(password)
-        }
+        .map(gitHubValidationService::validatePassword)
         .stateIn(viewModelScope, SharingStarted.Eagerly, PasswordValidationResult.EMPTY)
 
     val repeatedPasswordValidationResult = _password
-        .combine(_repeatedPassword) { password, repeatedPassword ->
-            gitHubValidationService.validateRepeatedPassword(password, repeatedPassword)
-        }
+        .combine(_repeatedPassword, gitHubValidationService::validateRepeatedPassword)
         .stateIn(viewModelScope, SharingStarted.Eagerly, RepeatedPasswordValidationResult.EMPTY)
 
     val isSignUpButtonEnabled = merge(
@@ -140,41 +164,25 @@ class SignupViewModel(
         .map { it == RepeatedPasswordValidationResult.EMPTY }
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
-    val isLoadingViewAnimating = _isSigningUp.asStateFlow()
-
     val presentSignupSuccessPopupEvent = _onSignUpButtonClicked
-        .throttleFirst(500)
-        .flatMapLatest {
+        .flatMapConcat {
             _isSigningUp.value = true
             flow {
-                val username = gitHubApi.signUp(_username.value, _password.value)
+                val username = gitHubApi.signUp(
+                    _username.value,
+                    _password.value
+                )
                 emit(username)
                 _isSigningUp.value = false
-            }.catch {
-                _onNetworkFailed.tryEmit(it)
-                _isSigningUp.value = false
             }
+                .catch {
+                    _onNetworkFailed.tryEmit(it)
+                    _isSigningUp.value = false
+                }
         }
         .shareIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     val presentNetworkFailurePopupEvent = _onNetworkFailed
         .map { it.message }
         .shareIn(viewModelScope, SharingStarted.Eagerly, 0)
-
-    fun onUsernameChanged(username: String) {
-        _username.value = username.trim().lowercase()
-    }
-
-    fun onPasswordChanged(password: String) {
-        _password.value = password
-    }
-
-    fun onRepeatedPasswordChanged(repeatedPassword: String) {
-        _repeatedPassword.value = repeatedPassword
-    }
-
-    fun onSignUpButtonClicked() {
-        _onSignUpButtonClicked.tryEmit(Unit)
-    }
-
 }
