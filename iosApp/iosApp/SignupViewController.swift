@@ -133,36 +133,43 @@ class SignupViewController: UIViewController {
                 self?.usernameValidationLabel.text = text
             }
             .closed(by: bag)
+
         viewModel.passwordValidationText
             .watchString { [weak self] text in
                 self?.passwordValidationLabel.text = text
             }
             .closed(by: bag)
+
         viewModel.repeatedPasswordValidationText
             .watchString { [weak self] text in
                 self?.repeatedPasswordValidationLabel.text = text
             }
             .closed(by: bag)
+
         viewModel.usernameValidationLabelIsHidden
             .watchBool { [weak self] isHidden in
                 self?.usernameValidationLabel.isHidden = isHidden
             }
             .closed(by: bag)
+
         viewModel.passwordValidationLabelIsHidden
             .watchBool { [weak self] isHidden in
                 self?.passwordValidationLabel.isHidden = isHidden
             }
             .closed(by: bag)
+
         viewModel.repeatedPasswordValidationLabelIsHidden
             .watchBool { [weak self] isHidden in
                 self?.repeatedPasswordValidationLabel.isHidden = isHidden
             }
             .closed(by: bag)
+
         viewModel.isSignUpButtonEnabled
             .watchBool { [weak self] isEnabled in
                 self?.signUpButton.isEnabled = isEnabled
             }
             .closed(by: bag)
+
         viewModel.isLoadingViewAnimating
             .watchBool { [weak self] isAnimating in
                 if isAnimating {
@@ -172,6 +179,7 @@ class SignupViewController: UIViewController {
                 }
             }
             .closed(by: bag)
+
         viewModel.presentSignupSuccessPopupEvent
             .watchString { [weak self] username in
                 let ac = UIAlertController(title: "✅ You have successfully signed up!", message: username, preferredStyle: .alert)
@@ -180,6 +188,7 @@ class SignupViewController: UIViewController {
                 self?.present(ac, animated: true, completion: nil)
             }
             .closed(by: bag)
+
         viewModel.presentNetworkFailurePopupEvent
             .watchString { [weak self] errorMessage in
                 let ac = UIAlertController(title: "❌ Something went wrong, please try again later.", message: errorMessage, preferredStyle: .alert)
@@ -188,6 +197,7 @@ class SignupViewController: UIViewController {
                 self?.present(ac, animated: true, completion: nil)
             }
             .closed(by: bag)
+
         viewModel.usernameValidationResult
             .watch { [weak self] result in
                 guard let result = result else { return }
@@ -206,6 +216,7 @@ class SignupViewController: UIViewController {
                 }
             }
             .closed(by: bag)
+
         viewModel.passwordValidationResult
             .watch { [weak self] result in
                 guard let result = result else { return }
@@ -220,6 +231,7 @@ class SignupViewController: UIViewController {
                 }
             }
             .closed(by: bag)
+
         viewModel.repeatedPasswordValidationResult
             .watch { [weak self] result in
                 guard let result = result else { return }
