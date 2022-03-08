@@ -4,6 +4,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
@@ -36,4 +38,8 @@ fun <T> Flow<T>.throttleFirst(windowDuration: Long): Flow<T> {
             }
         }
     }
+}
+
+fun <T> Flow<Result<T>>.getOrCatch(action: suspend FlowCollector<T>.(Throwable) -> Unit): Flow<T> {
+    return map { it.getOrThrow() }.catch(action)
 }

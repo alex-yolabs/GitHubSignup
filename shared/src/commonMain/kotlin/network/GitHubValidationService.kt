@@ -18,7 +18,7 @@ enum class RepeatedPasswordValidationResult {
 
 interface GitHubValidationService {
     val minPasswordCount: Int
-    fun validateUsername(username: String): Flow<UsernameValidationResult>
+    fun validateUsername(username: String): Flow<Result<UsernameValidationResult>>
     fun validatePassword(password: String): PasswordValidationResult
     fun validateRepeatedPassword(password: String, repeatedPassword: String): RepeatedPasswordValidationResult
 }
@@ -31,28 +31,30 @@ class CloudGitHubValidationService(
 
     override val minPasswordCount = 6
 
-    override fun validateUsername(username: String): Flow<UsernameValidationResult> = flow {
+    override fun validateUsername(username: String): Flow<Result<UsernameValidationResult>> = flow {
         if (username.isEmpty()) {
-            emit(UsernameValidationResult.EMPTY)
+            emit(Result.success(UsernameValidationResult.EMPTY))
             return@flow
         }
 
         if (!username.matches("^[a-zA-Z0-9]*$".toRegex())) {
-            emit(UsernameValidationResult.WRONG_FORMAT)
+            emit(Result.success(UsernameValidationResult.WRONG_FORMAT))
             return@flow
         }
 
-        emit(UsernameValidationResult.VALIDATING)
-        try {
-            if (gitHubApi.isUsernameAvailable(username)) {
-                emit(UsernameValidationResult.OK)
-            } else {
-                emit(UsernameValidationResult.ALREADY_TAKEN)
+        emit(Result.success(UsernameValidationResult.VALIDATING))
+        gitHubApi.isUsernameAvailable(username)
+            .onSuccess {
+                if (it) {
+                    emit(Result.success(UsernameValidationResult.OK))
+                } else {
+                    emit(Result.success(UsernameValidationResult.ALREADY_TAKEN))
+                }
             }
-        } catch (e: Exception) {
-            logger.log("exception: $e")
-            emit(UsernameValidationResult.SERVICE_ERROR)
-        }
+            .onFailure {
+                logger.log("exception: $it")
+                emit(Result.success(UsernameValidationResult.SERVICE_ERROR))
+            }
     }
 
     override fun validatePassword(password: String): PasswordValidationResult {

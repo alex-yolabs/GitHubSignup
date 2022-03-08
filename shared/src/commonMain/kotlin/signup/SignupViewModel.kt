@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapConcat
@@ -24,6 +23,7 @@ import network.PasswordValidationResult
 import network.RepeatedPasswordValidationResult
 import network.UsernameValidationResult
 import utilities.Logger
+import utilities.getOrCatch
 
 @FlowPreview
 @ExperimentalCoroutinesApi
@@ -78,7 +78,7 @@ class SignupViewModel(
         .debounce(500)
         .flatMapLatest { username ->
             gitHubValidationService.validateUsername(username)
-                .catch {
+                .getOrCatch {
                     _onNetworkFailed.tryEmit(it)
                 }
         }
@@ -168,17 +168,16 @@ class SignupViewModel(
         .flatMapConcat {
             _isSigningUp.value = true
             flow {
-                val username = gitHubApi.signUp(
-                    _username.value,
-                    _password.value
-                )
-                emit(username)
-                _isSigningUp.value = false
+                gitHubApi.signUp(_username.value, _password.value)
+                    .onSuccess {
+                        emit(it)
+                        _isSigningUp.value = false
+                    }
+                    .onFailure {
+                        _onNetworkFailed.tryEmit(it)
+                        _isSigningUp.value = false
+                    }
             }
-                .catch {
-                    _onNetworkFailed.tryEmit(it)
-                    _isSigningUp.value = false
-                }
         }
         .shareIn(viewModelScope, SharingStarted.Eagerly, 0)
 

@@ -9,8 +9,8 @@ import utilities.Logger
 import kotlin.random.Random
 
 interface GitHubApi {
-    suspend fun isUsernameAvailable(username: String): Boolean
-    suspend fun signUp(username: String, password: String): String
+    suspend fun isUsernameAvailable(username: String): Result<Boolean>
+    suspend fun signUp(username: String, password: String): Result<String>
 }
 
 class CloudGitHubApi : GitHubApi {
@@ -23,27 +23,28 @@ class CloudGitHubApi : GitHubApi {
         private const val GITHUB_ENDPOINT = "https://github.com"
     }
 
-    override suspend fun isUsernameAvailable(username: String): Boolean {
+    override suspend fun isUsernameAvailable(username: String): Result<Boolean> {
         return try {
             delay(500)
             val urlString = "$GITHUB_ENDPOINT/$username"
             val response: HttpResponse = httpClient.get(urlString)
-            response.status != HttpStatusCode.OK
+            val isAvailable = response.status != HttpStatusCode.OK
+            Result.success(isAvailable)
         } catch(e: Exception) {
             if (Random.nextBoolean()) {
-                true
+                Result.success(true)
             } else {
-                throw IllegalStateException("Failed to determine availability of [$username].")
+                Result.failure(IllegalStateException("Failed to determine availability of [$username]."))
             }
         }
     }
 
-    override suspend fun signUp(username: String, password: String): String {
+    override suspend fun signUp(username: String, password: String): Result<String> {
         delay(1000)
         return if (Random.nextBoolean()) {
-            username
+            Result.success(username)
         } else {
-            throw IllegalStateException("Failed to sign up [$username].")
+            Result.failure(IllegalStateException("Failed to sign up [$username]."))
         }
     }
 }
