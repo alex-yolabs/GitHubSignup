@@ -1,13 +1,22 @@
 PODS:
+  - Auth0 (2.1.0):
+    - JWTDecode (~> 2.0)
+    - SimpleKeychain
+  - JWTDecode (2.6.3)
   - shared (1.0)
+  - SimpleKeychain (0.12.5)
   - SnapKit (5.0.1)
 
 DEPENDENCIES:
+  - Auth0 (~> 2.0)
   - shared (from `../shared`)
   - SnapKit
 
 SPEC REPOS:
   trunk:
+    - Auth0
+    - JWTDecode
+    - SimpleKeychain
     - SnapKit
 
 EXTERNAL SOURCES:
@@ -15,9 +24,12 @@ EXTERNAL SOURCES:
     :path: "../shared"
 
 SPEC CHECKSUMS:
+  Auth0: 9efbaaf645794178e48cdde78ffe9d531e6212a3
+  JWTDecode: 33e5e26e5ddbd21b2065820894c08fef0cad9509
   shared: 29346581d099b8843a69aab157c4d0577c3c8287
+  SimpleKeychain: 8193a9e40967eccac933c1fde82de46c07a5ae26
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
 
-PODFILE CHECKSUM: 5c5f442cab9f47818bf8531af8ad5e9a96b922eb
+PODFILE CHECKSUM: 08627956d3df73cad3969372cbf2bea92fe75072
 
 COCOAPODS: 1.10.1

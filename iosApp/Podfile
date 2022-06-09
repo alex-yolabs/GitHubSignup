@@ -3,4 +3,5 @@ target 'iosApp' do
   platform :ios, '14.1'
   pod 'shared', :path => '../shared'
   pod 'SnapKit'
+  pod 'Auth0', '~> 2.0'
 end
