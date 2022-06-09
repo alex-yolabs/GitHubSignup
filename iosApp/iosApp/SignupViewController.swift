@@ -110,10 +110,11 @@ class SignupViewController: UIViewController {
         return sv
     }()
 
-    private let fooButton: UIButton = {
+    private lazy var signupButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setTitle("Sign Up", for: .normal)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        btn.addTarget(self, action: #selector(didTapSignupButton(button:)), for: .touchUpInside)
         return btn
     }()
 
@@ -128,12 +129,12 @@ class SignupViewController: UIViewController {
     private func setupView() {
         view.backgroundColor = .white
         view.addSubview(stackView)
-        view.addSubview(fooButton)
+        view.addSubview(signupButton)
         stackView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
             $0.left.right.equalToSuperview().inset(20)
         }
-        fooButton.snp.makeConstraints {
+        signupButton.snp.makeConstraints {
             $0.center.equalToSuperview()
         }
     }
@@ -273,6 +274,9 @@ class SignupViewController: UIViewController {
 
     @objc private func didTapSignUpButton(button: UIButton) {
         viewModel.onSignUpButtonClicked()
+    }
+
+    @objc private func didTapSignupButton(button: UIButton) {
     }
 
 }
