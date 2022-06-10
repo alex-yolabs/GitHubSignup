@@ -8,6 +8,7 @@
 
 import UIKit
 import shared
+import Auth0
 
 class SignupViewController: UIViewController {
 
@@ -110,11 +111,19 @@ class SignupViewController: UIViewController {
         return sv
     }()
 
-    private lazy var signupButton: UIButton = {
+    private lazy var logInButton: UIButton = {
         let btn = UIButton(type: .system)
-        btn.setTitle("Sign Up", for: .normal)
+        btn.setTitle("Log In", for: .normal)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        btn.addTarget(self, action: #selector(didTapSignupButton(button:)), for: .touchUpInside)
+        btn.addTarget(self, action: #selector(didTapLogInButton(button:)), for: .touchUpInside)
+        return btn
+    }()
+
+    private lazy var logOutButton: UIButton = {
+        let btn = UIButton(type: .system)
+        btn.setTitle("Log Out", for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        btn.addTarget(self, action: #selector(didTapLogOutButton(button:)), for: .touchUpInside)
         return btn
     }()
 
@@ -129,13 +138,18 @@ class SignupViewController: UIViewController {
     private func setupView() {
         view.backgroundColor = .white
         view.addSubview(stackView)
-        view.addSubview(signupButton)
+        view.addSubview(logInButton)
+        view.addSubview(logOutButton)
         stackView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
             $0.left.right.equalToSuperview().inset(20)
         }
-        signupButton.snp.makeConstraints {
+        logInButton.snp.makeConstraints {
             $0.center.equalToSuperview()
+        }
+        logOutButton.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.top.equalTo(logInButton.snp.bottom)
         }
     }
 
@@ -276,7 +290,30 @@ class SignupViewController: UIViewController {
         viewModel.onSignUpButtonClicked()
     }
 
-    @objc private func didTapSignupButton(button: UIButton) {
+    @objc private func didTapLogInButton(button: UIButton) {
+        Auth0
+            .webAuth(clientId: "qRlQr289sskc0qkH6iAKT8GbsUDrXU22", domain: "dev-xyz8mlo2.us.auth0.com")
+            .start { result in
+                switch result {
+                case let .success(credentials):
+                    NSLog("🎥🙏🙏🙏 credentials: \(credentials)")
+                case let .failure(webAuthError):
+                    NSLog("🎥🙏🙏🙏 failed to log in with webAuthError: \(webAuthError)")
+                }
+            }
+    }
+
+    @objc private func didTapLogOutButton(button: UIButton) {
+        Auth0
+            .webAuth(clientId: "qRlQr289sskc0qkH6iAKT8GbsUDrXU22", domain: "dev-xyz8mlo2.us.auth0.com")
+            .clearSession { result in
+                switch result {
+                case .success:
+                    NSLog("🎥🙏🙏🙏 logged out successfully")
+                case let .failure(webAuthError):
+                    NSLog("🎥🙏🙏🙏 failed to log out with webAuthError: \(webAuthError)")
+                }
+            }
     }
 
 }
