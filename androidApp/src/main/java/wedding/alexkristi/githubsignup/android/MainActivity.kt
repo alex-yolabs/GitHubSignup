@@ -1,7 +1,9 @@
 package wedding.alexkristi.githubsignup.android
 
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +16,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.TextStyle
+import com.google.firebase.dynamiclinks.ktx.dynamicLinks
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -176,5 +180,25 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             .launchIn(MainScope())
+
+        Firebase.dynamicLinks
+            .getDynamicLink(intent)
+            .addOnSuccessListener(this) { pendingDynamicLinkData ->
+                // Get deep link from result (may be null if no link is found)
+                var deepLink: Uri? = null
+                if (pendingDynamicLinkData != null) {
+                    deepLink = pendingDynamicLinkData.link
+                }
+
+                Log.i(TAG, "getDynamicLink:onSuccess deeplink: $deepLink")
+
+            }
+            .addOnFailureListener(this) { e ->
+                Log.w(TAG, "getDynamicLink:onFailure", e)
+            }
+    }
+
+    companion object {
+        const val TAG = "MainActivity"
     }
 }
