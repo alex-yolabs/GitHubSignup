@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "245989494406",
+    "project_id": "githubsignup-6104f",
+    "storage_bucket": "githubsignup-6104f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245989494406:android:c072af7d21381664a98b07",
+        "android_client_info": {
+          "package_name": "wedding.alexkristi.githubsignup.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "245989494406-s6i3pnpf2dpcvbt2qgkjtj0t561r5b4n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9NCUgp6Owea9bb5P38Ihdyl996eKBoWA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "245989494406-s6i3pnpf2dpcvbt2qgkjtj0t561r5b4n.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "245989494406-ulbvh69ddglfi2t4fivb7idrhh2qpf95.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "wedding.alexkristi.githubsignup"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
