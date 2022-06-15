@@ -4,4 +4,5 @@ target 'iosApp' do
   pod 'shared', :path => '../shared'
   pod 'SnapKit'
   pod 'Auth0', '~> 2.0'
+  pod 'FirebaseAnalytics'
 end
