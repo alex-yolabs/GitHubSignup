@@ -12,6 +12,7 @@ buildscript {
         classpath("com.android.tools.build:gradle:7.0.2")
         classpath("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
         classpath("com.squareup.sqldelight:gradle-plugin:$sqlDelightVersion")
+        classpath("com.google.gms:google-services:4.3.10")
     }
 }
 

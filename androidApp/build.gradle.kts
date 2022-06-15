@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     kotlin("android")
+    id("com.google.gms.google-services")
 }
 
 dependencies {
@@ -21,6 +22,9 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07")
     // UI Tests
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.1")
+
+    implementation(platform("com.google.firebase:firebase-bom:30.1.0"))
+    implementation("com.google.firebase:firebase-analytics-ktx")
 }
 
 android {
